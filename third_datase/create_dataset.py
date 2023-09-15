@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Spyder Editor
-
-This is a temporary script file.
-"""
 
 import numpy as np
 import pandas as pd
@@ -92,7 +87,7 @@ def convert_time_category(Data):
         t = time.split(':')
         AM_PM = t[3]
         #print(AM_PM)
-        #t = t[0].split(':')
+        ###t = t[0].split(':')
         hour = int (t[0])
         minute = int (t[1])
         #print(hour, minute)
@@ -118,7 +113,7 @@ def convert_time_category(Data):
 #---------------------------------------------------------
 def read_crash(year):
     crash_file_name = str(year) +'_DATA_SA_Crash.csv'
-    print('File name',crash_file_name )
+    #print('File name',crash_file_name )
     crash_columns =['REPORT_ID','Stats Area','Suburb',
                             'Year',	'Month','Day',	'Time',	
                             'Area Speed',	'Position Type', 
@@ -137,7 +132,7 @@ def read_crash(year):
 #------------------------------------------------------
 def read_casualty(year):
     casul_file_name = str(year) +'_DATA_SA_Casualty.csv'
-    print('File name',casul_file_name )
+    #print('File name',casul_file_name )
     casual_columns =['REPORT_ID','Casualty Type']
     
     Data_casual = pd.read_csv(casul_file_name)
@@ -174,14 +169,14 @@ def merge_crash_casual(Data_crash, Data_casual,crash_columns, casual_columns):
                  # print(id)
                 
           
-        else:
-          print(id)
+        #else:
+          #print(id)
           
           
         j = j + 1   
     
     # select record from casual
-    print(np.shape(index_in_casual)) 
+    #print(np.shape(index_in_casual)) 
     index_in_casual = np.array(index_in_casual)
     df1= Data_casual.iloc[index_in_casual]
     df1 = df1.drop(columns =['REPORT_ID'])
@@ -226,7 +221,7 @@ def merge_crash_units(Data_crash, Data_units,crash_columns, units_columns ):
     j =0
     
     for id in ids_in_crash:
-        flag = False
+        #flag = False
         index = np.where (ids_in_unts == id)
         index= np.array(index)
         num_ind = np.shape(index) [1] 
@@ -240,15 +235,15 @@ def merge_crash_units(Data_crash, Data_units,crash_columns, units_columns ):
                 index_in_crash.append(j)
                 #print("id in crash =", id)
                 #print("index in units =",index_temp)
-                flag =True
+                #flag =True
                 break
-        if flag== False:
-            print(id)
+        #if flag== False:
+         #   print(id)
         j=j+1       
              
     
     
-    print(np.shape(index_in_units)) 
+    #print(np.shape(index_in_units)) 
     index_in_units = np.array(index_in_units)
     Data_units=Data_units.drop(columns='REPORT_ID')
     df1= Data_units.iloc[index_in_units]
@@ -274,6 +269,7 @@ def convert_id_to_date(Data_crash, crash_columns, Year):
     if Year <=2020:
         Features_map,index_in_crash = look_up_id_report(Data_crash)
         Features_map = np.array(Features_map)
+        #print("hi")
         Features_map = np.reshape(Features_map, newshape = (len(Features_map),1))
         
         map_columns=['exact_Date']
@@ -332,48 +328,23 @@ def look_up_id_report(Data_crash):
     print(np.shape(index_in_map)) 
     index_in_map = np.array(index_in_map)
     Date= Map_Data['DATE_TIME'].iloc[index_in_map]
-    
+   
     
     Features_map=[]
     for d in Date:
         #print(d)
         t = d.split(' ')
         t[0] = t[0].replace('/','-')
-        print(t[0])
+        #print(t[0])
         Features_map.append(t[0])
         #break
-        
-    return  Features_map 
+      
+    return  Features_map,index_in_crash
 #------------------------------------------------------------------------------
-def convert_month_2_num(month):
-    if month == 'April':
-        return
-    if month == 'April':
-        return
-    if month == 'April':
-        return
-    if month == 'April':
-        return
-    if month == 'April':
-        return
-    if month == 'April':
-        return
-    if month == 'April':
-        return
-    if month == 'April':
-        return
-    if month == 'April':
-        return
-    if month == 'April':
-        return
-    if month == 'April':
-        return
-        
-     
-
-       
-
-
+def convert_month_2_num(long_month_name):
+    datetime_object = datetime.datetime.strptime(long_month_name, "%B")
+    month_number = datetime_object.month
+    return month_number
 #------------------------------------------------------------------------------
 def random_date_id_report(Data_crash):
     ids_in_crash =Data_crash['REPORT_ID']     
@@ -382,7 +353,9 @@ def random_date_id_report(Data_crash):
     day= Data_crash['Day']
     Feature_map=[]
     for y,m,d in zip(year,month, day):
-        print(y,m,d)
+        #print(y,m,d)
+        m = convert_month_2_num(m)
+        #print(y,m,d)
         date=find_date(y, m, d)
         Feature_map.append(date)
     return Feature_map
@@ -401,9 +374,9 @@ def find_date(year, month, weekday):
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
-first_year =2021
+first_year =2012
 Year = first_year
-for i in range(1):   
+for i in range(11):   
   Year = first_year + i  
   print("i =",  i, "Year =", Year)
   print ("Preparing Year:", Year)  
@@ -418,20 +391,20 @@ for i in range(1):
   # merge crash and casual
   New_Data1, All_features_name = merge_crash_casual(Data_crash, Data_casual,
                                                   crash_columns,casual_columns)
-  print("--------------Merge Data Crash and Casual-----------------")
-  print(New_Data1.info())
+  #print("--------------Merge Data Crash and Casual-----------------")
+  #print(New_Data1.info())
   
   Data_units, units_columns = read_units(Year)
   #print(Data_units.info())
   New_Data, All_features_name = merge_crash_units(New_Data1, Data_units,
                                                   All_features_name,units_columns)
-  print("------------------Merge Data Crash and Units--------------------")
-  print(New_Data.info())
-  print("-----------------Map id to Date------------------- ")
+  #print("------------------Merge Data Crash and Units--------------------")
+  #print(New_Data.info())
+  #print("-----------------Map id to Date------------------- ")
   New_Data, All_features_name =convert_id_to_date(New_Data, All_features_name, Year)
-  print(New_Data.info())
-  New_Data.to_csv('example.csv', index = False)
-  '''New_Data = fill_all_missing(New_Data)
+  #print(New_Data.info())
+  
+  New_Data = fill_all_missing(New_Data)
 
   convert_time_category(New_Data)
   New_Data = New_Data.drop(columns=['Time'])
@@ -440,8 +413,8 @@ for i in range(1):
   else :
       Total_Data = pd.concat([Total_Data, New_Data])
     
-  print("-------------------------------------")  
-  
+  #print("-------------------------------------")  
+  #New_Data.to_csv('example.csv', index = False)
   
   
 
@@ -459,9 +432,8 @@ map_categorical_name=onehot_encoder.get_feature_names_out()
 
 Total_Data_binary_Years = Total_Data.copy()
 #Total_Data_binary_Years=Total_Data_binary_Years.drop(columns =['Year'])
-for i in range(9):
+for i in range(11):
    Total_Data_binary_Years[map_categorical_name[i]] = categorical_transformed_features[:,i].tolist()
    
  
 Total_Data_binary_Years.to_csv("All_years_Casul_Data_binaryYear.csv", index=False)  
-   '''
