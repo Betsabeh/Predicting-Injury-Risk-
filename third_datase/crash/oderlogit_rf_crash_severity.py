@@ -11,9 +11,9 @@ import pandas as pd
 
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.inspection import PartialDependenceDisplay
-
+from sklearn.inspection import partial_dependence
 
 
 
@@ -36,6 +36,7 @@ from scipy.stats import norm
 #------------------------------------------------------------------------------
 # 1- Read Data
 Data = pd.read_csv('All_years_Casul_Data_unNormalised.csv')
+Data = Data.drop(columns= ['exact_Date'])
 print("------------Data information----------------")
 print (Data.info())
 # Features
@@ -79,7 +80,7 @@ X = Data[features_name]
 y = Data['Severity']
 
 # Fit the random forest model
-rf_model = RandomForestRegressor(n_estimators=128, random_state=42)
+rf_model = RandomForestClassifier(n_estimators=128, random_state=42)
 rf_model.fit(X, y)
 
 # Print the summary of the random forest model
@@ -101,15 +102,21 @@ for feature, importance_score in zip(features_name, importance):
 
 
 # 5-Plot partial dependence for 'Age'
-PartialDependenceDisplay.from_estimator(rf_model,X=Data, features =[(22,5)]) #speed
 
-display = PartialDependenceDisplay.from_estimator(rf_model,Data,[16]) # speed
+features= [(0,)]
+deciles = {0: np.linspace(0, 1, num=5)}
+pd_results = partial_dependence(rf_model, X, features=['Area_Speed'], kind="average", grid_resolution=5)
+display = PartialDependenceDisplay( [pd_results], features=features, 
+                                   feature_names=['Area_Speed'],target_idx=0, deciles=deciles)
+display.plot()
+plt.show()
 
-display = PartialDependenceDisplay.from_estimator(rf_model,Data,[17])# accloc X
 
-display = PartialDependenceDisplay.from_estimator(rf_model,Data,[18])# accloc y
-
-display = PartialDependenceDisplay.from_estimator(rf_model,Data,[19])# Age
-
-
+features= [(0,)]
+deciles = {0: np.linspace(0, 1, num=5)}
+pd_results = partial_dependence(rf_model, X, features=['Age'], kind="average", grid_resolution=5)
+display = PartialDependenceDisplay( [pd_results], features=features, 
+                                   feature_names=['Age'],target_idx=0, deciles=deciles)
+display.plot()
+plt.show()
 
