@@ -12,6 +12,7 @@ import pandas as pd
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.inspection import PartialDependenceDisplay
 
 
 
@@ -34,7 +35,7 @@ from scipy.stats import norm
 #------------------------------------------------------------------------------    
 #------------------------------------------------------------------------------
 # 1- Read Data
-Data = pd.read_csv('Data_all_years_normalised.csv')
+Data = pd.read_csv('All_years_Casul_Data_unNormalised.csv')
 print("------------Data information----------------")
 print (Data.info())
 # Features
@@ -100,14 +101,15 @@ for feature, importance_score in zip(features_name, importance):
 
 
 # 5-Plot partial dependence for 'Age'
-plt.figure()
-plt.plot(X['Age'], rf_model.predict(X), 'b.')
-plt.xlabel('Age')
-plt.ylabel('Partial Dependence')
-plt.title('Partial Dependence Plot for Age')
-plt.show()
+PartialDependenceDisplay.from_estimator(rf_model,X=Data, features =[(22,5)]) #speed
 
+display = PartialDependenceDisplay.from_estimator(rf_model,Data,[16]) # speed
 
+display = PartialDependenceDisplay.from_estimator(rf_model,Data,[17])# accloc X
+
+display = PartialDependenceDisplay.from_estimator(rf_model,Data,[18])# accloc y
+
+display = PartialDependenceDisplay.from_estimator(rf_model,Data,[19])# Age
 
 
 
